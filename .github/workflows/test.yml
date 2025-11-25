@@ -44,6 +44,7 @@ jobs:
         run: |
           bun test.js
           quickjs-emscripten-cli test.js
+          bun run.js
 
       - name: strip
         run: |
@@ -61,3 +62,4 @@ jobs:
         run: |
           bun test.js
           quickjs-emscripten-cli test.js
+          bun run.js
