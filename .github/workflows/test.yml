@@ -1,0 +1,63 @@
+name: test
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -CeEuo pipefail {0}
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-arm64
+            os: macos-latest
+          - name: windows
+            os: windows-latest
+          - name: ubuntu
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    name: test-${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: install
+        run: |
+          bun i -g quickjs-emscripten-cli
+
+      - name: run
+        run: |
+          bun test.js
+          quickjs-emscripten-cli test.js
+
+      - name: strip
+        run: |
+          name="quickjs-emscripten-cli"
+          case "$(uname -s)" in
+            *MINGW*|*MSYS*|*CYGWIN*) name="quickjs-emscripten-cli.exe" ;;
+          esac
+          ls -lh $(which $name)
+
+          striip $(which $name)
+
+          ls -lh $(which $name)
+
+      - name: run strip
+        run: |
+          bun test.js
+          quickjs-emscripten-cli test.js
