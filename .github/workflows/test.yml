@@ -53,7 +53,7 @@ jobs:
           esac
           ls -lh $(which $name)
 
-          striip $(which $name)
+          strip $(which $name)
 
           ls -lh $(which $name)
 
